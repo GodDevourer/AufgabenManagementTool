@@ -17,7 +17,7 @@ class TicketFetch extends AbstractController
     }
 
     #[Route(path: '/tickets')]
-    public function showTable(): JsonResponse
+    public function renderAll(): JsonResponse
     {
         $tickets = $this->tickets->getAll();
 

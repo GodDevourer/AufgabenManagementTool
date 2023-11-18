@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class TicketDeletion implements TicketDeletionInterface
 {
     private EntityManagerInterface $entityManager;
+
     private TicketsRepository $ticketsRepository;
 
     public function __construct(EntityManagerInterface $entityManager, TicketsRepository $ticketsRepository)
@@ -16,6 +17,7 @@ class TicketDeletion implements TicketDeletionInterface
         $this->entityManager = $entityManager;
         $this->ticketsRepository = $ticketsRepository;
     }
+
     public function delete(int $id): void
     {
         $ticket = $this->ticketsRepository->find($id);

@@ -6,7 +6,7 @@ use App\DTO\TicketDTO;
 use App\Services\Factories\TicketFactoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TicketCreator
+class TicketCreator implements TicketCreatorInterface
 {
     private TicketFactoryInterface $TicketFactoryInterface;
     private EntityManagerInterface $entityManager;

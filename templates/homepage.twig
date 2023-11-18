@@ -5,47 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aufgabenmanagement-Tool</title>
 </head>
-<div class="overlay">
-    <div class="overlay__inner" id="loader">
-        <div class="overlay__content"><span class="spinner"></span></div>
-    </div>
-    <div class="container">
-        <div class="spalte">
-            <h2>TODO</h2>
-            <div id="spalte-0">
+<body>
+    <div class="overlay">
+        <div class="overlay__inner" id="loader">
+            <div class="overlay__content"><span class="spinner"></span></div>
+        </div>
+        <div class="container">
+            <div class="spalte" id="sort-0">
+                <h2>TODO</h2>
+                <div id="spalte-0">
+                </div>
+            </div>
+            <div class="spalte" id="sort-1">
+                <h2>Wird bearbeitet</h2>
+                <div id="spalte-1">
+                </div>
+            </div>
+            <div class="spalte" id="sort-2">
+                <h2>Wird noch getestet</h2>
+                <div id="spalte-2">
+                </div>
+            </div>
+            <div class="spalte" id="sort-3">
+                <h2>Fertig</h2>
+                <div id="spalte-3">
+                </div>
             </div>
         </div>
-        <div class="spalte">
-            <h2>Wird bearbeitet</h2>
-            <div id="spalte-1">
-            </div>
+        <div id="neu-unten">
+            <button id="neu" class="button-style">Neu</button>
         </div>
-        <div class="spalte">
-            <h2>Wird noch getestet</h2>
-            <div id="spalte-2">
-            </div>
+        <div id="neu-mitte">
+            <form action="/add" method="post">
+                <input type="text" placeholder="Titel" name="title" id="titleAdd">
+                <textarea type="text" placeholder="Text" name="text" id="textAdd"></textarea>
+                <input type="text" placeholder="Person" name="title" id="personAdd">
+                <div class="buttons">
+                    <button id="actually-neu" class="button-style">Ok</button>
+                    <button id="abbruch" class="button-style">Abbruch</button>
+                </div>
+            </form>
         </div>
-        <div class="spalte">
-            <h2>Fertig</h2>
-            <div id="spalte-3">
-            </div>
+        <div id="change-mitte">
+            <form action="/update" method="post">
+                <input type="text" placeholder="Titel" name="title" id="titleChange">
+                <textarea type="text" placeholder="Text" name="text" id="textChange"></textarea>
+                <input type="text" placeholder="Person" name="title" id="personChange">
+                <div class="buttons">
+                    <button id="buttonChange" class="button-style">Ok</button>
+                    <button id="abbruchChange" class="button-style">Abbruch</button>
+                </div>
+            </form>
         </div>
     </div>
-    <div id="neu-unten">
-        <button id="neu" class="button-style">Neu</button>
-    </div>
-    <div id="neu-mitte">
-        <form action="/add" method="post">
-            <input type="text" placeholder="Titel" name="title" id="titleAdd">
-            <textarea type="text" placeholder="Text" name="text" id="textAdd"></textarea>
-            <input type="text" placeholder="Person" name="title" id="personAdd">
-            <div class="buttons">
-                <button id="actually-neu" class="button-style">Ok</button>
-                <button id="abbruch" class="button-style">Abbruch</button>
-            </div>
-        </form>
-    </div>
-</div>
 </body>
 <script>
     async function postData(url = "", data = {}) {
@@ -70,6 +82,11 @@
         aufgaben.forEach((e) => {
             const div = document.createElement("div");
             div.classList.add("aufgabe");
+            div.draggable = true;
+            div.addEventListener("dragstart", (event) => {
+                event.dataTransfer.clearData();
+                event.dataTransfer.setData("text/plain", JSON.stringify(e));
+            })
 
             div.aufgabenId = e.id;
 
@@ -97,20 +114,55 @@
                 location.href = "/";
             });
 
+            const change = document.createElement("button");
+            change.classList.add("button-style")
+            change.classList.add("change")
+            change.innerHTML = "Bearbeiten"
+            change.addEventListener("click", (event) => {
+                event.preventDefault();
+                let element = document.querySelector("#change-mitte")
+                element.style = "display: flex;"
+                element.aufgabenId = e.id
+                element.sort = e.sort
+
+                document.querySelector("#titleChange").value = e.title
+                document.querySelector("#textChange").innerHTML = e.text
+                document.querySelector("#personChange").value = e.person
+            })
+
             div.appendChild(p0);
             div.appendChild(p1);
             div.appendChild(p2);
             div.appendChild(loeschen);
+            div.appendChild(change)
 
             document.querySelector(`#spalte-${e.sort}`).appendChild(div);
 
             let element = document.getElementById("loader");
-            console.log(element)
             element.classList.add("noDisplay");
         })
     }
 
     getAufgaben();
+
+    Array.from(document.querySelectorAll(".spalte")).forEach((e) => {
+        e.addEventListener("dragenter", (event) => {
+            event.preventDefault();
+        });
+
+        e.addEventListener("dragover", (event) => {
+            event.preventDefault();
+        })
+
+        e.addEventListener("drop", (event) => {
+            event.preventDefault()
+
+            let testobj = JSON.parse(event.dataTransfer.getData("text"))
+            testobj.sort = parseInt(event.target.id.replace("sort\-", ""))
+
+            change(testobj)
+        })
+    })
 
     document.querySelector("#neu").addEventListener("click", (e) => {
         e.preventDefault();
@@ -137,15 +189,37 @@
         location.href = "/";
     }
 
-    async function change(e) {
+    document.querySelector("#abbruchChange").addEventListener("click", (e) => {
         e.preventDefault();
+        document.querySelector("#change-mitte").style = "display: none;"
+    })
+
+    document.querySelector("#buttonChange").addEventListener("click", (e) => changeTicket(e));
+
+    async function changeTicket(e) {
+        e.preventDefault()
+
+        let aufgabenId = document.querySelector("#change-mitte").aufgabenId
+        let sort = document.querySelector("#change-mitte").sort
 
         await postData("/update", {
-            title: document.querySelector("#titleAdd").value,
-            text: document.querySelector("#textAdd").value,
-            sort: 0,
-            person: document.querySelector("#personAdd").value,
-            id: 1
+            title: document.querySelector("#titleChange").value,
+            text: document.querySelector("#textChange").value,
+            sort: sort,
+            person: document.querySelector("#personChange").value,
+            id: aufgabenId
+        });
+
+        location.href = "/";
+    }
+
+    async function change(e) {
+        await postData("/update", {
+            title: e.title,
+            text: e.text,
+            sort: e.sort,
+            person: e.person,
+            id: e.id
         });
 
         location.href = "/";
@@ -177,8 +251,7 @@
     }
 
     .spalte {
-        background-color: #f0f0f0;
-        border-radius: 0.5em;
+        background-color: #B0B0B0;
         padding: 1em;
     }
 
@@ -187,6 +260,7 @@
         flex-direction: column;
         align-items: center;
         margin-bottom: 0.5em;
+        user-select: none;
     }
 
     /* Task box styles */
@@ -222,7 +296,7 @@
     }
 
     /* New task form styles */
-    #neu-mitte {
+    #neu-mitte, #change-mitte {
         display: none;
         position: fixed;
         top: 0;
@@ -239,7 +313,6 @@
         flex-direction: column;
         gap: 0.5em;
         padding: 2em;
-        border-radius: 1em;
         background-color: #f4f4f4;
         max-width: 400px;
         width: 80%;
@@ -302,5 +375,10 @@
     .noDisplay {
         display: none;
     }
+
+    input, textarea {
+        padding: 5px;
+    }
+
 </style>
 </html>
