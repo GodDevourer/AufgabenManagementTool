@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\DTO\TicketDTOFactory;
-use App\Services\Helper\TicketUpdating;
+use App\DTO\TicketDTOFactoryInterface;
+use App\Services\Helper\TicketUpdatingInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,12 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UpdateTicket extends AbstractController
 {
-    private TicketUpdating $ticketUpdating;
-    private TicketDTOFactory $ticketDTOFactory;
+    private TicketUpdatingInterface $TicketUpdatingInterface;
+    private TicketDTOFactoryInterface $ticketDTOFactory;
 
-    public function __construct(TicketUpdating $ticketUpdating, TicketDTOFactory $ticketDTOFactory)
-    {
-        $this->ticketUpdating = $ticketUpdating;
+    public function __construct(
+        TicketUpdatingInterface $TicketUpdatingInterface,
+        TicketDTOFactoryInterface $ticketDTOFactory
+    ) {
+        $this->TicketUpdatingInterface = $TicketUpdatingInterface;
         $this->ticketDTOFactory = $ticketDTOFactory;
     }
 
@@ -24,14 +26,13 @@ class UpdateTicket extends AbstractController
     public function update(Request $request): JsonResponse
     {
         $ticketDTO = $this->ticketDTOFactory->create(
-            $request->getPayload()->get('id'),
             $request->getPayload()->get('sort'),
             $request->getPayload()->get('text'),
             $request->getPayload()->get('title'),
             $request->getPayload()->get('person')
         );
 
-        $this->ticketUpdating->update($ticketDTO);
+        $this->TicketUpdatingInterface->update($ticketDTO, $request->getPayload()->get('id'));
 
         return $this->json('');
     }

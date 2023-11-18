@@ -4,7 +4,7 @@ namespace App\Services\Helper;
 
 use App\Repository\TicketsRepository;
 
-class FetchTickets
+class FetchTickets implements FetchTicketsInterface
 {
     private TicketsRepository $ticketsRepository;
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DTO\TicketDTOFactoryInterface;
 use App\Services\Helper\TicketCreator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,23 +13,25 @@ class AddTicket extends AbstractController
 {
 
     private TicketCreator $ticketCreator;
+    private TicketDTOFactoryInterface $ticketDTOFactory;
 
-    public function __construct(TicketCreator $ticketCreator)
+    public function __construct(TicketCreator $ticketCreator, TicketDTOFactoryInterface $ticketDTOFactory)
     {
         $this->ticketCreator = $ticketCreator;
+        $this->ticketDTOFactory = $ticketDTOFactory;
     }
 
     #[Route(path: '/add')]
     public function add(Request $request): JsonResponse
     {
-        $ticketParameters = [
-            'sort' => $request->getPayload()->get('sort'),
-            'title' => $request->getPayload()->get('title'),
-            'text' => $request->getPayload()->get('text'),
-            'person' => $request->getPayload()->get('person'),
-        ];
+        $ticketDTO = $this->ticketDTOFactory->create(
+            $request->getPayload()->get('sort'),
+            $request->getPayload()->get('text'),
+            $request->getPayload()->get('title'),
+            $request->getPayload()->get('person')
+        );
 
-        $this->ticketCreator->persist($ticketParameters);
+        $this->ticketCreator->persist($ticketDTO);
 
         return $this->json('');
     }

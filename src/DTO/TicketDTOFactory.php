@@ -2,10 +2,10 @@
 
 namespace App\DTO;
 
-class TicketDTOFactory
+class TicketDTOFactory implements TicketDTOFactoryInterface
 {
-    public function create(int $id, int $sort, string $text, string $title, string $person): TicketDTO
+    public function create(int $sort, string $text, string $title, string $person): TicketDTO
     {
-        return new TicketDTO($id, $sort, $text, $title, $person);
+        return new TicketDTO($sort, $text, $title, $person);
     }
 }

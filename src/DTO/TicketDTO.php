@@ -8,15 +8,13 @@ class TicketDTO
     private string $text;
     private string $title;
     private string $person;
-    private int $id;
 
-    public function __construct(int $id, int $sort, string $text, string $title, string $person)
+    public function __construct(int $sort, string $text, string $title, string $person)
     {
         $this->sort = $sort;
         $this->text = $text;
         $this->title = $title;
         $this->person = $person;
-        $this->id = $id;
     }
 
     public function getTitle(): string
@@ -37,10 +35,5 @@ class TicketDTO
     public function getSort(): int
     {
         return $this->sort;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 }

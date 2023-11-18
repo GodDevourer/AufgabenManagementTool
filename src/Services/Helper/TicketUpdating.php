@@ -7,7 +7,7 @@ use App\Entity\Tickets;
 use App\Repository\TicketsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TicketUpdating
+class TicketUpdating implements TicketUpdatingInterface
 {
     private EntityManagerInterface $entityManager;
     private TicketsRepository $ticketsRepository;
@@ -18,9 +18,9 @@ class TicketUpdating
         $this->ticketsRepository = $ticketsRepository;
     }
 
-    public function update(TicketDTO $ticketParameters): void
+    public function update(TicketDTO $ticketParameters, int $id): void
     {
-        $ticket = $this->ticketsRepository->find($ticketParameters->getId());
+        $ticket = $this->ticketsRepository->find($id);
 
         if ($ticket instanceof Tickets) {
             $ticket

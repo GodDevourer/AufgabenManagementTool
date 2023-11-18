@@ -2,24 +2,24 @@
 
 namespace App\Controller;
 
-use App\Services\Helper\TicketDeletion;
+use App\Services\Helper\TicketDeletionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DeleteTicket extends AbstractController
 {
-    private TicketDeletion $ticketDeletion;
+    private TicketDeletionInterface $TicketDeletionInterface;
 
-    public function __construct(TicketDeletion $ticketDeletion)
+    public function __construct(TicketDeletionInterface $TicketDeletionInterface)
     {
-        $this->ticketDeletion = $ticketDeletion;
+        $this->TicketDeletionInterface = $TicketDeletionInterface;
     }
 
     #[Route(path: '/delete/{id}')]
     public function delete(int $id): JsonResponse
     {
-        $this->ticketDeletion->delete($id);
+        $this->TicketDeletionInterface->delete($id);
 
         return $this->json('');
     }

@@ -152,7 +152,6 @@
     }
 
     async function loeschen(e) {
-        console.log("test", e)
         e.preventDefault();
 
         await getData(`/delete/${this.aufgabenId}`);
@@ -174,6 +173,7 @@
         grid-template-columns: repeat(4, 1fr);
         height: calc(100vh - 3em);
         gap: 0.3em;
+        overflow-y: auto;
     }
 
     .spalte {

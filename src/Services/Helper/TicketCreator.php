@@ -2,29 +2,30 @@
 
 namespace App\Services\Helper;
 
-use App\Services\Factories\TicketFactory;
+use App\DTO\TicketDTO;
+use App\Services\Factories\TicketFactoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TicketCreator
 {
-    private TicketFactory $ticketFactory;
+    private TicketFactoryInterface $TicketFactoryInterface;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(TicketFactory $ticketFactory, EntityManagerInterface $entityManager)
+    public function __construct(TicketFactoryInterface $TicketFactoryInterface, EntityManagerInterface $entityManager)
     {
-        $this->ticketFactory = $ticketFactory;
+        $this->TicketFactoryInterface = $TicketFactoryInterface;
         $this->entityManager = $entityManager;
     }
 
-    public function persist(array $ticketParameter): void
+    public function persist(TicketDTO $ticketParameters): void
     {
-        $newTicket = $this->ticketFactory->get();
+        $newTicket = $this->TicketFactoryInterface->get();
 
         $newTicket
-            ->setTitle($ticketParameter['title'])
-            ->setText($ticketParameter['text'])
-            ->setSort($ticketParameter['sort'])
-            ->setPerson($ticketParameter['person']);
+            ->setTitle($ticketParameters->getTitle())
+            ->setText($ticketParameters->getText())
+            ->setSort($ticketParameters->getSort())
+            ->setPerson($ticketParameters->getPerson());
 
         $this->entityManager->persist($newTicket);
         $this->entityManager->flush();

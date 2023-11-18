@@ -6,7 +6,7 @@ use App\Entity\Tickets;
 use App\Repository\TicketsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TicketDeletion
+class TicketDeletion implements TicketDeletionInterface
 {
     private EntityManagerInterface $entityManager;
     private TicketsRepository $ticketsRepository;

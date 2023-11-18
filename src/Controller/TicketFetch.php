@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\Services\Helper\FetchTickets;
+use App\Services\Helper\FetchTicketsInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TicketFetch extends AbstractController
 {
-    private FetchTickets $tickets;
+    private FetchTicketsInterface $tickets;
 
-    public function __construct(FetchTickets $tickets)
+    public function __construct(FetchTicketsInterface $tickets)
     {
         $this->tickets = $tickets;
     }
